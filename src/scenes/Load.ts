@@ -33,6 +33,15 @@ export default class LoadScene extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 32,
         });
+        this.load.spritesheet('player-hit', './assets/player/Hit.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+
+        this.load.spritesheet('mushroom-run', './assets/mushroom/Run.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
 
         const label = this.add.text(
             this.config.width / 2,

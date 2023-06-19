@@ -6,6 +6,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     jumpCount: number;
     consecutiveJumps: number;
+    isAlive: boolean;
+    hitVelocity: number;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'player');
@@ -17,6 +19,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.velocityY = 400;
         this.jumpCount = 0;
         this.consecutiveJumps = 1;
+        this.isAlive = true;
+        this.hitVelocity = 100;
 
         this.body!.gravity.y = 500;
 
@@ -32,10 +36,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     die() {
+        this.isAlive = false;
+        this.body!.checkCollision.none = true;
+
+        this.setVelocity(
+            this.body!.touching.right ? -this.hitVelocity : this.hitVelocity,
+            -this.hitVelocity,
+        );
+
+        this.play('hit', true);
     }
 
     update(): void {
-        if (!this.body) {
+        if (!this.isAlive || !this.body) {
             return;
         }
 
@@ -112,6 +125,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             }),
             frameRate: 20,
             repeat: -1,
+        });
+        this.scene.anims.create({
+            key: 'hit',
+            frames: this.anims.generateFrameNumbers('player-hit', {
+                start: 0,
+                end: 6,
+            }),
+            frameRate: 20,
+            repeat: 0,
         });
     }
 }
