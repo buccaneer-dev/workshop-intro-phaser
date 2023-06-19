@@ -10,8 +10,12 @@ export default class LoadScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('start', './assets/Start.png');
+        this.load.image('end', './assets/End.png');
+
         this.load.image('terrain_tiles', './assets/tilesets/Terrain.png');
-        this.load.tilemapTiledJSON('level_0', './assets/tilemaps/level_0.json');
+        this.load.tilemapTiledJSON('level_1', './assets/tilemaps/level_1.json');
+        this.load.tilemapTiledJSON('level_2', './assets/tilemaps/level_2.json');
 
         this.load.spritesheet('cherry', './assets/fruit/Cherries.png', {
             frameWidth: 32,
@@ -57,5 +61,6 @@ export default class LoadScene extends Phaser.Scene {
 
     create() {
         this.scene.start('PlayScene');
+        this.registry.set('level', 0);
     }
 }

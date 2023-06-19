@@ -38,6 +38,9 @@ export default class PlayScene extends Phaser.Scene {
         const layers = this.createLevel();
         this.platforms = layers.platforms!;
         const zones = this.getZones(layers.zones!);
+
+        this.createEnv(layers.env!.objects);
+
         this.enemies = this.createEnemies(zones.spawns);
         this.colliders = this.createEnemyColliders(zones.colliders);
 
@@ -55,6 +58,8 @@ export default class PlayScene extends Phaser.Scene {
 
         this.scoreLabel.setScrollFactor(0);
 
+        this.createEndOfLevel(zones.end.x!, zones.end.y!);
+
         this.setupCamera();
 
         this.collectSound = this.sound.add('collect');
@@ -62,14 +67,15 @@ export default class PlayScene extends Phaser.Scene {
 
     createLevel() {
         const map = this.make.tilemap({
-            key: `level_0`,
+            key: `level_${((this.registry.get('level')) % this.config.levels)+1}`,
         });
         const tileset = map.addTilesetImage('Terrain', 'terrain_tiles');
         const platforms = map.createLayer('Platforms', tileset!);
         const zones = map.getObjectLayer('Zones');
         const fruit = map.getObjectLayer('Fruit');
+        const env = map.getObjectLayer('Env');
 
-        return { platforms, zones, fruit };
+        return { platforms, zones, fruit, env };
     }
 
     addColliders() {
@@ -97,6 +103,7 @@ export default class PlayScene extends Phaser.Scene {
         const objects = zones.objects;
         return {
             start: objects.find((o) => o.name === 'start')!,
+            end: objects.find((o) => o.name === 'end')!,
             spawns: objects.filter((o) => o.name === 'spawn')!,
             colliders: objects.filter((o) => o.name === 'collider')!,
         };
@@ -135,6 +142,13 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     createEnv(envObj: Phaser.Types.Tilemaps.TiledObject[]) {
+        envObj.forEach((e) => {
+            this.physics.add.staticSprite(
+                e.x! + e.width! / 2,
+                e.y! - e.height! / 2,
+                e.type,
+            );
+        });
     }
 
     collectFruit(
@@ -171,6 +185,11 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.collide(this.player, this.enemies);
         this.physics.collide(this.enemies, this.colliders);
         this.physics.overlap(this.player, this.fruits);
+
+        if (this.player.y > 640) {
+            this.player.die();
+            this.scene.start('PlayScene');
+        }
     }
 
     onPlayerHit(
@@ -185,5 +204,20 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     createEndOfLevel(x: number, y: number) {
+        const endOfLevel = this.physics.add
+            .staticSprite(x, y, 'cherry')
+            .setAlpha(0)
+            .setSize(32, 32)
+            .setOrigin(0.5, 1);
+
+        const eolOverlap = this.physics.add.overlap(
+            this.player,
+            endOfLevel,
+            () => {
+                eolOverlap.active = false;
+                this.registry.inc('level', 1);
+                this.scene.restart();
+            },
+        );
     }
 }
