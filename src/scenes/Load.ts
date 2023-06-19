@@ -21,6 +21,18 @@ export default class LoadScene extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 32,
         });
+        this.load.spritesheet('player-run', './assets/player/Run.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+        this.load.spritesheet('player-jump', './assets/player/Jump.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+        this.load.spritesheet('player-fall', './assets/player/Fall.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
 
         const label = this.add.text(
             this.config.width / 2,
