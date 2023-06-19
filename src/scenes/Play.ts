@@ -188,7 +188,7 @@ export default class PlayScene extends Phaser.Scene {
 
         if (this.player.y > 640) {
             this.player.die();
-            this.scene.start('PlayScene');
+            this.scene.start('MenuScene');
         }
     }
 
