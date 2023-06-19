@@ -8,6 +8,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     consecutiveJumps: number;
     isAlive: boolean;
     hitVelocity: number;
+    jumpSound:
+        | Phaser.Sound.NoAudioSound
+        | Phaser.Sound.HTML5AudioSound
+        | Phaser.Sound.WebAudioSound;
+    hitSound:
+        | Phaser.Sound.NoAudioSound
+        | Phaser.Sound.HTML5AudioSound
+        | Phaser.Sound.WebAudioSound;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'player');
@@ -32,10 +40,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.createAnimations();
 
+        this.jumpSound = this.scene.sound.add('jump');
+        this.hitSound = this.scene.sound.add('hit');
+
         this.scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
     }
 
     die() {
+        if(!this.isAlive) return;
+
         this.isAlive = false;
         this.body!.checkCollision.none = true;
 
@@ -45,6 +58,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         );
 
         this.play('hit', true);
+        this.hitSound.play();
     }
 
     update(): void {
@@ -71,6 +85,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             isUpJustDown &&
             (this.jumpCount < this.consecutiveJumps || canWallJump)
         ) {
+            this.jumpSound.play();
             this.setVelocityY(-this.velocityY);
             this.jumpCount++;
         }

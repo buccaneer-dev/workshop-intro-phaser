@@ -22,6 +22,10 @@ export default class PlayScene extends Phaser.Scene {
     enemies!: Enemies;
     colliders!: Colliders;
     fruits!: Fruits;
+    collectSound!:
+        | Phaser.Sound.NoAudioSound
+        | Phaser.Sound.HTML5AudioSound
+        | Phaser.Sound.WebAudioSound;
     score!: number;
 
     constructor(config: IGameConfig) {
@@ -52,6 +56,8 @@ export default class PlayScene extends Phaser.Scene {
         this.scoreLabel.setScrollFactor(0);
 
         this.setupCamera();
+
+        this.collectSound = this.sound.add('collect');
     }
 
     createLevel() {
@@ -140,6 +146,7 @@ export default class PlayScene extends Phaser.Scene {
             | Phaser.Tilemaps.Tile,
     ) {
         fruit.destroy();
+        this.collectSound.play();
         this.score += 10;
         this.scoreLabel.setText(`Score: ${this.score}`);
     }

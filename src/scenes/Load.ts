@@ -43,6 +43,10 @@ export default class LoadScene extends Phaser.Scene {
             frameHeight: 32,
         });
 
+        this.load.audio('jump', './assets/audio/phaseJump.ogg');
+        this.load.audio('collect', './assets/audio/pepSound.ogg');
+        this.load.audio('hit', './assets/audio/highDown.ogg');
+
         const label = this.add.text(
             this.config.width / 2,
             this.config.height / 2,
